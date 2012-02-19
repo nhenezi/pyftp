@@ -13,14 +13,48 @@ class pyftp( ftplib.FTP ):
       print( "Uknown server" )
       sys.exit()
 
-
+  # logins user
   def auth( self,  user, passwd ):
     try:
       self.login(  user, passwd )
     except Exception:
       print( "Bad login")
       sys.exit()
-    
+  
+  #creates a new directory
+  def mkdir( self, name ):
+    try:
+      print( "Creating {}{}".format( ftp.pwd(), name ) )
+      self.mkd( name )
+    except Exception as e:
+      print( e )
+
+  #changes directory
+  def cd( self, name ):
+    try:
+      ftp.cwd( name )
+    except Exception as e:
+      print( e )
+
+  def rm( self, name = '' ):
+    if ( re.search( '\/\*', name ) ):
+      name = name.split( '/*', 1 )
+      file_list = ftp.nlst( name[0] )
+      for filename in file_list :
+        print( filename )
+   # else:
+   #   try:
+   #     ftp.delete( name )
+   #   except Exception as e:
+   #     print (e )
+
+  def rmdir( self, name ):
+    self.rmd( name )
+
+  #lists directory
+  def ls( self, name = '' ):
+    for filename in ftp.nlst( name ):
+      print( filename )
 
 if __name__ == "__main__":
   if ( len(sys.argv) > 1):
@@ -34,9 +68,9 @@ if __name__ == "__main__":
     srv = input("Server: ")
   passwd = getpass("Password: ")
 
-
   ftp = pyftp( srv )
   ftp.auth( user, passwd )
+  ftp.set_debuglevel( 1 )
   print( ftp.getwelcome() )
 
   while (1):
@@ -45,36 +79,34 @@ if __name__ == "__main__":
     if ( cmd == "quit" or cmd == "exit"):
       break;
 
-    elif ( cmd == "ls" ):
-      ftp.retrlines('LIST');
+    elif ( re.search('ls.*', cmd) ):
+      st = cmd.split( ' ', 1 )
+      if isinstance( st, list ):
+        ftp.ls( st[1] )
+      else:
+        ftp.retrlines('LIST')
 
     elif ( cmd == "pwd" ):
       print( ftp.pwd() )
 
     elif ( re.search('mkdir .+', cmd ) ):
       st = cmd.split(' ', 1)
-      try:
-        print( "Creating {}{}".format( ftp.pwd(), st[1]) )
-        ftp.mkd( st[1] )
-      except Exception as e:
-        print ( e )
+      ftp.mkdir( st[1] )
 
     elif ( re.search('cd .+', cmd) ):
       st = cmd.split(' ', 1)
-      try:
-        print( "Changing to {}".format( st[1] ) )
-        ftp.cwd( st[1] )
-      except Exception as e:
-        print( e )
+      ftp.cd( st[1] )
+
     elif ( re.search('rm .+', cmd) ):
       st = cmd.split(' ', 1)
-      if ( re.search('\*', st[1] ) ):
-        print("resursive")
-      else:
-        try:
-          ftp.delete( st[1] )
-        except Exception as e:
-          print ( e )
+      ftp.rm( st[1] )
+
+    elif( re.search('rmdir -+', cmd ) ):
+      st = cmd.split(' ', 1)
+      ftp.rmdir( st[1] )
+    
+    elif ( cmd == 'nlst' ):
+      print ( ftp.nlst() )
   try:
     ftp.quit()
   except Exception as e:

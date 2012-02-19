@@ -41,21 +41,20 @@ class pyftp( ftplib.FTP ):
       name = name.split( '/*', 1 )
       file_list = ftp.nlst( name[0] )
       for filename in file_list :
-        print( filename )
-   # else:
-   #   try:
-   #     ftp.delete( name )
-   #   except Exception as e:
-   #     print (e )
+        print( name[0] + "/" + filename )
+    else:
+      try:
+        ftp.delete( name )
+      except Exception as e:
+        print (e )
 
+  #removes directory
   def rmdir( self, name ):
     self.rmd( name )
 
   #lists directory
-  def ls( self, name = '' ):
-    for filename in ftp.nlst( name ):
-      print( filename )
-
+  def ls( self, name= ''):
+    print ( self.retrlines( 'LIST ' + name ) )
 if __name__ == "__main__":
   if ( len(sys.argv) > 1):
     user = sys.argv[1]
@@ -70,7 +69,7 @@ if __name__ == "__main__":
 
   ftp = pyftp( srv )
   ftp.auth( user, passwd )
-  ftp.set_debuglevel( 1 )
+
   print( ftp.getwelcome() )
 
   while (1):
@@ -81,7 +80,7 @@ if __name__ == "__main__":
 
     elif ( re.search('ls.*', cmd) ):
       st = cmd.split( ' ', 1 )
-      if isinstance( st, list ):
+      if isinstance( st, list ) and len( st ) > 1:
         ftp.ls( st[1] )
       else:
         ftp.retrlines('LIST')
@@ -101,12 +100,10 @@ if __name__ == "__main__":
       st = cmd.split(' ', 1)
       ftp.rm( st[1] )
 
-    elif( re.search('rmdir -+', cmd ) ):
+    elif( re.search('rmdir .+', cmd ) ):
       st = cmd.split(' ', 1)
       ftp.rmdir( st[1] )
-    
-    elif ( cmd == 'nlst' ):
-      print ( ftp.nlst() )
+
   try:
     ftp.quit()
   except Exception as e:

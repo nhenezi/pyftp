@@ -2,6 +2,7 @@
 
 import ftplib
 import sys
+import re
 from getpass import getpass
 
 class FTP( ftplib.FTP ):
@@ -26,13 +27,17 @@ if __name__ == "__main__":
 
   while (1):
     cmd = input("> ")
-    if ( cmd == "quit" ):
+    if ( cmd == "quit" or cmd == "exit"):
       break;
-
-    if ( cmd == "ls" ):
+    elif ( cmd == "ls" ):
       ftp.retrlines('LIST');
-    if ( cmd == "pwd" ):
+    elif ( cmd == "pwd" ):
       print( ftp.pwd() )
-      
+    elif ( re.search('mkdir .+', cmd ) ):
+      st = cmd.split(' ', 1)
+      ftp.mkd( st[1] )
+    elif ( re.search('cd .+', cmd) ):
+      st = cmd.split(' ', 1)
+      ftp.cwd( st[1] )
   if ( ftp.quit() ):
     print( "Connection Closed" )

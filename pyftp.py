@@ -5,40 +5,42 @@ import sys
 import re
 from getpass import getpass
 
-class FTP( ftplib.FTP ):
-  user = "a"
+class pyftp( ftplib.FTP ):
+  def __init__( self,  srv ):
+    try:
+      super().__init__( srv )
+    except Exception:
+      print( "Uknown server" )
+      sys.exit()
+
+
+  def auth( self,  user, passwd ):
+    try:
+      self.login(  user, passwd )
+    except Exception:
+      print( "Bad login")
+      sys.exit()
+    
 
 if __name__ == "__main__":
   if ( len(sys.argv) > 1):
-    FTP.user = sys.argv[1]
+    user = sys.argv[1]
   else:
-    FTP.user = input( "Username: ")
+    user = input( "Username: ")
 
   if ( len(sys.argv) > 2 ):
-    FTP.server  = sys.argv[2]
+    srv  = sys.argv[2]
   else:
-    FTP.server = input("Server: ")
-  FTP.passwd = getpass("Password: ")
+    srv = input("Server: ")
+  passwd = getpass("Password: ")
 
-  try:
-    ftp = FTP( FTP.server )
-  except Exception:
-    print("Unknown server" )
-    sys.exit()
 
-  try:
-    ftp.login( FTP.user, FTP.passwd )
-  except Exception:
-    print("Bad login" )
-    sys.exit()
+  ftp = pyftp( srv )
+  ftp.auth( user, passwd )
+  print( ftp.getwelcome() )
 
-  try:
-    print( ftp.getwelcome() )
-  except Exception as e:
-    print( e )
-    sys.exit()
   while (1):
-    cmd = input("> ")
+    cmd = input( ftp.pwd()+"$ ")
 
     if ( cmd == "quit" or cmd == "exit"):
       break;

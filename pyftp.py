@@ -33,7 +33,7 @@ if __name__ == "__main__":
     sys.exit()
 
   try:
-    print( FTP.getwelcome() )
+    print( ftp.getwelcome() )
   except Exception as e:
     print( e )
     sys.exit()
@@ -52,6 +52,7 @@ if __name__ == "__main__":
     elif ( re.search('mkdir .+', cmd ) ):
       st = cmd.split(' ', 1)
       try:
+        print( "Creating {}{}".format( ftp.pwd(), st[1]) )
         ftp.mkd( st[1] )
       except Exception as e:
         print ( e )
@@ -59,9 +60,19 @@ if __name__ == "__main__":
     elif ( re.search('cd .+', cmd) ):
       st = cmd.split(' ', 1)
       try:
+        print( "Changing to {}".format( st[1] ) )
         ftp.cwd( st[1] )
       except Exception as e:
         print( e )
+    elif ( re.search('rm .+', cmd) ):
+      st = cmd.split(' ', 1)
+      if ( re.search('\*', st[1] ) ):
+        print("resursive")
+      else:
+        try:
+          ftp.delete( st[1] )
+        except Exception as e:
+          print ( e )
   try:
     ftp.quit()
   except Exception as e:

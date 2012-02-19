@@ -20,24 +20,49 @@ if __name__ == "__main__":
     FTP.server = input("Server: ")
   FTP.passwd = getpass("Password: ")
 
-  ftp = FTP( FTP.server )
-  ftp.login( FTP.user, FTP.passwd )
+  try:
+    ftp = FTP( FTP.server )
+  except Exception:
+    print("Unknown server" )
+    sys.exit()
 
-  print( ftp.getwelcome() )
+  try:
+    ftp.login( FTP.user, FTP.passwd )
+  except Exception:
+    print("Bad login" )
+    sys.exit()
 
+  try:
+    print( FTP.getwelcome() )
+  except Exception as e:
+    print( e )
+    sys.exit()
   while (1):
     cmd = input("> ")
+
     if ( cmd == "quit" or cmd == "exit"):
       break;
+
     elif ( cmd == "ls" ):
       ftp.retrlines('LIST');
+
     elif ( cmd == "pwd" ):
       print( ftp.pwd() )
+
     elif ( re.search('mkdir .+', cmd ) ):
       st = cmd.split(' ', 1)
-      ftp.mkd( st[1] )
+      try:
+        ftp.mkd( st[1] )
+      except Exception as e:
+        print ( e )
+
     elif ( re.search('cd .+', cmd) ):
       st = cmd.split(' ', 1)
-      ftp.cwd( st[1] )
-  if ( ftp.quit() ):
-    print( "Connection Closed" )
+      try:
+        ftp.cwd( st[1] )
+      except Exception as e:
+        print( e )
+  try:
+    ftp.quit()
+  except Exception as e:
+    print(e)

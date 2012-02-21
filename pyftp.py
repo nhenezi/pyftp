@@ -5,6 +5,16 @@ import sys
 import re
 from getpass import getpass
 
+class directory:
+  def getNext( name ):
+    if ( re.search( '\/', name ) ):
+      path = name.split( '/', 1 )
+      path = path[0]
+    else:
+      path = name
+    
+    return path[:-1]
+
 class pyftp( ftplib.FTP ):
   def __init__( self,  srv ):
     try:
@@ -36,17 +46,41 @@ class pyftp( ftplib.FTP ):
     except Exception as e:
       print( e )
 
-  def rm( self, name = '' ):
-    if ( re.search( '\/\*', name ) ):
-      name = name.split( '/*', 1 )
-      file_list = ftp.nlst( name[0] )
-      for filename in file_list :
-        print( name[0] + "/" + filename )
-    else:
-      try:
-        ftp.delete( name )
-      except Exception as e:
-        print (e )
+  def rm( self, name, start_path = '' ):
+
+    name = name.split( '/', 1 )
+
+    #if name starts with /, set start_path to /
+    if name[0] == '': 
+      start_path = '/'
+      #if you try to split /testdir/ you will get
+      #name[0] = ''
+      #name[1] = testdir/
+      # so one more split is required
+      name = name[1].split( '/', 1 ) 
+    #name doesn't start with /, start_path = current directory
+    elif start_path == '':
+      start_path = self.pwd()
+
+    #for regex replace * with .*
+    name[0] = name[0].replace( '*', '.*' )
+    for files in self.getDir( start_path ):
+     if files == '.' or files == '..':
+       continue
+     if  re.match( name[0], files ):
+       #for recursion to work this had to be added
+       #avoids duplicate // at start
+       if( start_path == '/' ):
+         start_path = ''
+       try:
+         self.rm( name[1], start_path + '/' + files )
+       except IndexError:
+         try:
+           self.delete( start_path + '/' + files )
+         except Exception as e:
+           print ( e )
+
+         
 
   #removes directory
   def rmdir( self, name ):
@@ -55,6 +89,10 @@ class pyftp( ftplib.FTP ):
   #lists directory
   def ls( self, name= ''):
     print ( self.retrlines( 'LIST ' + name ) )
+
+  def getDir( self, name ):
+    return self.nlst( name )
+ 
 if __name__ == "__main__":
   if ( len(sys.argv) > 1):
     user = sys.argv[1]
@@ -73,11 +111,14 @@ if __name__ == "__main__":
   print( ftp.getwelcome() )
 
   while (1):
-    cmd = input( ftp.pwd()+"$ ")
+    cmd = input( "> ")
 
     if ( cmd == "quit" or cmd == "exit"):
       break;
 
+    elif ( re.search(  "getdir .+", cmd ) ):
+      st = cmd.split( ' ', 1)
+      print (ftp.getDir( st[1]) )
     elif ( re.search('ls.*', cmd) ):
       st = cmd.split( ' ', 1 )
       if isinstance( st, list ) and len( st ) > 1:

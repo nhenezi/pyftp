@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! /usr/bin/python
 
 import ftplib
 import sys
@@ -18,9 +18,9 @@ class directory:
 class pyftp( ftplib.FTP ):
   def __init__( self,  srv ):
     try:
-      super().__init__( srv )
-    except Exception:
-      print( "Uknown server" )
+      ftplib.FTP.__init__(self, srv )
+    except Exception as e:
+      print e
       sys.exit()
 
   # logins user
@@ -28,13 +28,13 @@ class pyftp( ftplib.FTP ):
     try:
       self.login(  user, passwd )
     except Exception:
-      print( "Bad login")
+      print "Bad login"
       sys.exit()
   
   #creates a new directory
   def mkdir( self, name ):
     try:
-      print( "Creating {}{}".format( ftp.pwd(), name ) )
+      print "Creating {0}{1}".format( ftp.pwd(), name ) 
       self.mkd( name )
     except Exception as e:
       print( e )
@@ -44,7 +44,7 @@ class pyftp( ftplib.FTP ):
     try:
       ftp.cwd( name )
     except Exception as e:
-      print( e )
+      print e 
 
   def rm( self, name, start_path = '' ):
 
@@ -97,22 +97,21 @@ if __name__ == "__main__":
   if ( len(sys.argv) > 1):
     user = sys.argv[1]
   else:
-    user = input( "Username: ")
+    user = raw_input( "Username: ")
 
   if ( len(sys.argv) > 2 ):
     srv  = sys.argv[2]
   else:
-    srv = input("Server: ")
+    srv = raw_input("Server: ")
   passwd = getpass("Password: ")
-
+  print srv
   ftp = pyftp( srv )
   ftp.auth( user, passwd )
 
   print( ftp.getwelcome() )
 
   while (1):
-    cmd = input( "> ")
-
+    cmd = raw_input( "> ")
     if ( cmd == "quit" or cmd == "exit"):
       break;
 
@@ -131,6 +130,7 @@ if __name__ == "__main__":
 
     elif ( re.search('mkdir .+', cmd ) ):
       st = cmd.split(' ', 1)
+      print st[1]
       ftp.mkdir( st[1] )
 
     elif ( re.search('cd .+', cmd) ):

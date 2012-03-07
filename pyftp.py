@@ -113,37 +113,15 @@ if __name__ == "__main__":
   while (1):
     cmd = raw_input( "> ")
     if ( cmd == "quit" or cmd == "exit"):
-      break;
+      break; 
 
-    elif ( re.search(  "getdir .+", cmd ) ):
-      st = cmd.split( ' ', 1)
-      print (ftp.getDir( st[1]) )
-    elif ( re.search('ls.*', cmd) ):
-      st = cmd.split( ' ', 1 )
-      if isinstance( st, list ) and len( st ) > 1:
-        ftp.ls( st[1] )
-      else:
-        ftp.retrlines('LIST')
+    try:
+      param = cmd[1]
+    except IndexError:
+      param = ""
+    cmd = cmd[0]
 
-    elif ( cmd == "pwd" ):
-      print( ftp.pwd() )
-
-    elif ( re.search('mkdir .+', cmd ) ):
-      st = cmd.split(' ', 1)
-      print st[1]
-      ftp.mkdir( st[1] )
-
-    elif ( re.search('cd .+', cmd) ):
-      st = cmd.split(' ', 1)
-      ftp.cd( st[1] )
-
-    elif ( re.search('rm .+', cmd) ):
-      st = cmd.split(' ', 1)
-      ftp.rm( st[1] )
-
-    elif( re.search('rmdir .+', cmd ) ):
-      st = cmd.split(' ', 1)
-      ftp.rmdir( st[1] )
+    getattr ( ftp, cmd )( param )
 
   try:
     ftp.quit()

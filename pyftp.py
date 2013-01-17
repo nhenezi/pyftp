@@ -109,17 +109,16 @@ if __name__ == "__main__":
   print(ftp.getwelcome())
 
   while (1):
-    cmd = raw_input("> ")
-    if (cmd == "quit" or cmd == "exit"):
+    cmd = raw_input("> ").split()
+    if (cmd[0] == "quit" or cmd[0] == "exit"):
       break;
 
     try:
-      param = cmd[1]
+      getattr(ftp, cmd[0])(cmd[1])
     except IndexError:
-      param = ""
-    cmd = cmd[0]
-
-    getattr (ftp, cmd)(param)
+      getattr(ftp, cmd[0])()
+    except Exception as e:
+      print(e)
 
   try:
     ftp.quit()

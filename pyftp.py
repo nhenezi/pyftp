@@ -95,6 +95,13 @@ class pyftp(ftplib.FTP):
     '''Retrieves array of filenames from path'''
     print self.nlst(path)
 
+  def put(self, param):
+    '''Copies local file `local` to `remote`'''
+    param = param.split(' ', 1)
+    local = param[0]
+    remote = param[1]
+    self.storbinary('STOR ' + remote, open(local, 'rb'))
+
 if __name__ == "__main__":
   if (len(sys.argv) > 1):
     srv  = sys.argv[1]

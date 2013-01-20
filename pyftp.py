@@ -14,33 +14,43 @@ class pyftp(ftplib.FTP):
       print e
       sys.exit()
 
-  # logins user
+
   def auth(self,  user, passwd):
+    '''Login'''
     try:
       self.login(user, passwd)
     except Exception:
       print "Bad login"
       sys.exit()
 
-  #creates a new directory
+
   def mkdir(self, name):
+    '''Creates new directory'''
     try:
       print "Creating {0}{1}".format(ftp.pwd(), name)
       self.mkd(name)
     except Exception as e:
       print(e)
 
+
   def rmdir(self, name):
+    '''Removes directory'''
     return self.rmd(name)
 
-  #changes directory
+
   def cd(self, name):
+    '''Changes directory'''
     try:
       ftp.cwd(name)
     except Exception as e:
       print e
 
+
   def rm(self, param, start_path = ''):
+    '''Removes a file
+
+    Flags: -R [-r] deletes folder and everything inside
+    '''
     index = max(map((lambda x: param.rfind(x)), ['-R', '-r']))
     path = reduce((lambda x, y: x.replace(y, '')), [param, '-R', '-r', ' '])
     if index == -1:
@@ -51,15 +61,18 @@ class pyftp(ftplib.FTP):
       path = path.replace('./', '')
       self.delAll(path)
 
+
   def delAll(self, path):
+    '''Removes all files in `path` directory'''
     print 'Removing ' + self.pwd() + '/' + path
     map(self.delete, map(lambda x: path + x, self.getFilesByType(path)))
     for directory in self.getFilesByType(path, 'd'):
       self.delAll(path + directory + '/')
       self.rmdir(path + directory)
 
+
   def getFilesByType(self, path = './', type = '-'):
-    '''Retrieves all files in path directory'''
+    '''Retrieves all files in `path` directory'''
     filenames = []
 
     def isFile(line):
@@ -73,13 +86,13 @@ class pyftp(ftplib.FTP):
     return map(extractFilename, filenames)
     
 
-  #lists directory
   def ls(self, name= ''):
+    '''Lists directory'''
     print (self.retrlines('LIST ' + name ))
 
 
-  # retrieves array of filenames from path
   def getDir(self, path = ''):
+    '''Retrieves array of filenames from path'''
     print self.nlst(path)
 
 if __name__ == "__main__":

@@ -102,6 +102,13 @@ class pyftp(ftplib.FTP):
     remote = param[1]
     self.storbinary('STOR ' + remote, open(local, 'rb'))
 
+  def get(self, param):
+    '''Copies remote file `remote` to `local`'''
+    param = param.split(' ', 1)
+    remote = param[0]
+    local = param[1]
+    ftp.retrbinary('RETR ' + remote, open(local, 'wb').write)
+
 if __name__ == "__main__":
   if (len(sys.argv) > 1):
     srv  = sys.argv[1]

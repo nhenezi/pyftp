@@ -97,16 +97,16 @@ class pyftp(ftplib.FTP):
 
 if __name__ == "__main__":
   if (len(sys.argv) > 1):
-    user = sys.argv[1]
+    srv  = sys.argv[1]
+  else:
+    srv = raw_input("Server: ")
+
+  if (len(sys.argv) > 2):
+    user = sys.argv[2]
   else:
     user = raw_input("Username: ")
 
-  if (len(sys.argv) > 2):
-    srv  = sys.argv[2]
-  else:
-    srv = raw_input("Server: ")
   passwd = getpass("Password: ")
-  print srv
   ftp = pyftp(srv)
   ftp.auth(user, passwd)
 

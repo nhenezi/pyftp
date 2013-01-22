@@ -6,19 +6,13 @@ In short, I got frustrated with ftp and its lack of recursive operations.
 
 ## What does work?
 
-`mkdir directory` creates a new directory.
-
-`rmdir directory` removes directory.
-
-`cd directory` changes current working directory to `directory`.
-
-`rm file` removes file. Add -r flag to recursively remove everything inside directory. Example `rm -r directory` removes everything in `directory`.
-
-`ls directory` lists all files in directory. *NOTE*: If directory is not specified, current directory is listed.
-
-`put local remote` copies local file to remote.
-
-`get remote local` copies remote file to local.
+* `mkdir directory` creates a new directory.
+* `rmdir directory` removes directory.
+* `cd directory` changes current working directory to `directory`.
+* `rm file` removes file. Add -r flag to recursively remove everything inside directory. Example `rm -r directory` removes everything in `directory`.
+* `ls directory` lists all files in directory. *NOTE*: If directory is not specified, current directory is listed.
+* `put local remote` copies local file to remote.
+* `get remote local` copies remote file to local.
 
 ## TODO
 

@@ -13,12 +13,12 @@ In short, I got frustrated with ftp and its lack of recursive operations.
 * `ls directory` lists all files in directory. *NOTE*: If directory is not specified, current directory is listed.
 * `put local remote` copies local file to remote.
 * `get remote local` copies remote file to local.
+* local mode - Allows execution of commands on local machine inside pyftp. To execute command on local machine enter single space followed by command you want to execute. Example: ` ls -a` lists all files in working directory on local machine.
 
 ## TODO
 
 ### General features
 * auto completion
-* local mode - Allow execution of commands on local machine inside pyftp. Suggestion: Use one space ` ` as prefix for local mode. Example ` pwd` will print working directory on local machine
 * command history
 * multiple transfer types (currently only binary is used)
 

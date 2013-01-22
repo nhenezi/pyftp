@@ -3,6 +3,7 @@
 import ftplib
 import sys
 import re
+import os
 from getpass import getpass
 
 
@@ -127,7 +128,12 @@ if __name__ == "__main__":
   print(ftp.getwelcome())
 
   while (1):
-    cmd = raw_input("> ").split(' ', 1)
+    cmd = raw_input("> ")
+    if cmd[0] == " ":
+      '''local mode'''
+      os.system(cmd)
+      continue;
+    cmd = cmd.split(' ', 1)
     if (cmd[0] == "quit" or cmd[0] == "exit"):
       break;
 

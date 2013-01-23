@@ -4,7 +4,26 @@ import ftplib
 import sys
 import re
 import os
+import readline
 from getpass import getpass
+
+cmds = sorted(['mkdir', 'rmdir', 'cd', 'ls', 'put', 'get'])
+
+def setAutoComplete(options):
+  def autocomplete(text, state):
+    matches = None
+    if state == 0:
+      if text:
+        matches = [x for x in options if x.startswith(text)]
+      else:
+        matches = options[:]
+      try:
+        return matches[state] + ' '
+      except IndexError:
+        return None
+
+  readline.set_completer(autocomplete)
+  readline.parse_and_bind('tab: complete')
 
 
 class pyftp(ftplib.FTP):
@@ -79,13 +98,13 @@ class pyftp(ftplib.FTP):
     def isFile(line):
       if line[0] == type:
         filenames.append(line)
-        
+
     def extractFilename(line):
       return line.split()[8]
 
     self.retrlines('LIST ' + path, isFile)
     return map(extractFilename, filenames)
-    
+
 
   def ls(self, name= ''):
     '''Lists directory'''
@@ -126,7 +145,7 @@ if __name__ == "__main__":
   ftp.auth(user, passwd)
 
   print(ftp.getwelcome())
-
+  setAutoComplete(cmds)
   while (1):
     cmd = raw_input("> ")
     if cmd[0] == " ":
